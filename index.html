@@ -11,7 +11,7 @@
     <!-- Embedded Full Utility & Layout Style Engine -->
     <style id="offline-readiness-style">
       #offline-readiness-banner{position:sticky;top:0;z-index:25000;display:flex;align-items:center;justify-content:center;gap:6px;height:22px;padding:0 12px;overflow:hidden;white-space:nowrap;background:#dcfce7;color:#166534;font:700 11px/22px system-ui,-apple-system,sans-serif;border-bottom:1px solid #bbf7d0;transition:all .2s ease}
-      header.sticky{top:22px!important}
+      header.sticky{top:22px!important; z-index: 20000 !important;}
       #offline-readiness-banner #offline-status-label{overflow:hidden;text-overflow:ellipsis;font-weight:800}
       #offline-readiness-banner[data-state="offline"]{background:#fef3c7;color:#92400e;border-color:#fde68a}
       #offline-readiness-banner[data-state="error"]{background:#fee2e2;color:#991b1b;border-color:#fecaca}
@@ -100,9 +100,6 @@
       .fade-in { animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
       @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-      .cart-modal-pop { animation: cartModalPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
-      @keyframes cartModalPop { from { opacity: 0; transform: scale(0.94) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-
       .hdr { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
       .hdr-brand { order: 1; flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 10px; }
       .hdr-clock { order: 2; flex: 0 0 auto; }
@@ -126,8 +123,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
   </head>
   <body class="bg-slate-50 text-slate-900 min-h-screen">
     <div id="offline-readiness-banner" role="status" aria-live="polite" data-state="online">
@@ -141,53 +136,6 @@
       <div class="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
       <p class="mt-4 font-bold text-base tracking-wide">Smart POS Pro Enterprise Edition</p>
       <p class="mt-1 text-xs opacity-80">กำลังโหลดระบบจัดการสินค้า ตรวจสอบความถูกต้องของฐานข้อมูล...</p>
-    </div>
-
-    <!-- Loading Overlay -->
-    <div id="loading-overlay" class="fixed inset-0 flex flex-col items-center justify-center text-white hidden z-[10000] bg-slate-900/90 backdrop-blur-sm">
-      <div class="w-12 h-12 border-4 border-indigo-50 border-t-transparent rounded-full animate-spin mb-4"></div>
-      <p class="font-bold tracking-widest text-sm" id="loading-text">กำลังประมวลผลข้อมูล...</p>
-    </div>
-
-    <!-- EMPLOYEE PIN LOGIN / LOCK SCREEN -->
-    <div id="screen-employee-login" class="fixed inset-0 z-[9990] bg-gradient-to-br from-indigo-700 via-indigo-800 to-purple-900 flex items-center justify-center p-4">
-      <div class="bg-white rounded-[2.5rem] p-6 shadow-2xl w-full max-w-sm">
-        <div class="text-center mb-4">
-          <div class="text-4xl mb-2">🔐</div>
-          <h2 class="text-lg font-black text-slate-800">เข้าสู่ระบบพนักงาน</h2>
-          <p class="text-xs text-slate-400" id="login-store-name">Smart POS</p>
-        </div>
-
-        <div id="login-employee-select" class="space-y-2 max-h-[50vh] overflow-y-auto"></div>
-
-        <div id="login-pin-pad" class="hidden">
-          <div class="text-center mb-3">
-            <span id="login-selected-name" class="font-bold text-indigo-600 text-sm"></span>
-            <button onclick="window.backToEmployeeSelect()" class="block mx-auto text-[10px] text-slate-400 underline mt-1 btn-touch">‹ กลับไปเลือกพนักงาน</button>
-          </div>
-          <div class="flex justify-center gap-3 mb-4">
-            <span class="pin-dot w-3.5 h-3.5 rounded-full bg-slate-200 transition-colors"></span>
-            <span class="pin-dot w-3.5 h-3.5 rounded-full bg-slate-200 transition-colors"></span>
-            <span class="pin-dot w-3.5 h-3.5 rounded-full bg-slate-200 transition-colors"></span>
-            <span class="pin-dot w-3.5 h-3.5 rounded-full bg-slate-200 transition-colors"></span>
-          </div>
-          <div class="grid grid-cols-3 gap-2">
-            <button onclick="window.pinPadInput('1')" class="py-4 bg-slate-100 hover:bg-slate-200 rounded-2xl font-black text-lg btn-touch">1</button>
-            <button onclick="window.pinPadInput('2')" class="py-4 bg-slate-100 hover:bg-slate-200 rounded-2xl font-black text-lg btn-touch">2</button>
-            <button onclick="window.pinPadInput('3')" class="py-4 bg-slate-100 hover:bg-slate-200 rounded-2xl font-black text-lg btn-touch">3</button>
-            <button onclick="window.pinPadInput('4')" class="py-4 bg-slate-100 hover:bg-slate-200 rounded-2xl font-black text-lg btn-touch">4</button>
-            <button onclick="window.pinPadInput('5')" class="py-4 bg-slate-100 hover:bg-slate-200 rounded-2xl font-black text-lg btn-touch">5</button>
-            <button onclick="window.pinPadInput('6')" class="py-4 bg-slate-100 hover:bg-slate-200 rounded-2xl font-black text-lg btn-touch">6</button>
-            <button onclick="window.pinPadInput('7')" class="py-4 bg-slate-100 hover:bg-slate-200 rounded-2xl font-black text-lg btn-touch">7</button>
-            <button onclick="window.pinPadInput('8')" class="py-4 bg-slate-100 hover:bg-slate-200 rounded-2xl font-black text-lg btn-touch">8</button>
-            <button onclick="window.pinPadInput('9')" class="py-4 bg-slate-100 hover:bg-slate-200 rounded-2xl font-black text-lg btn-touch">9</button>
-            <button onclick="window.pinPadClear()" class="py-4 bg-rose-50 hover:bg-rose-100 text-rose-500 rounded-2xl font-black text-xs btn-touch">ล้าง</button>
-            <button onclick="window.pinPadInput('0')" class="py-4 bg-slate-100 hover:bg-slate-200 rounded-2xl font-black text-lg btn-touch">0</button>
-            <button onclick="window.pinPadBackspace()" class="py-4 bg-slate-100 hover:bg-slate-200 rounded-2xl font-black text-sm btn-touch">⌫</button>
-          </div>
-          <p id="login-pin-error" class="hidden text-center text-rose-500 text-xs font-bold mt-3">❌ PIN ไม่ถูกต้อง ลองอีกครั้ง</p>
-        </div>
-      </div>
     </div>
 
     <!-- Toast Notification -->
@@ -224,15 +172,8 @@
         <div class="text-[8px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 font-black mt-0.5">READY</div>
       </div>
       <div class="hdr-actions">
-        <button type="button" class="hb" data-hb="settings" onclick="window.openMasterSettingsModal()" aria-label="ศูนย์การตั้งค่า">⚙️</button>
-        <button type="button" class="hb" data-hb="shift" data-state="closed" id="shift-status-btn" onclick="window.openShiftModal()" aria-label="เปิด/ปิดกะ">
-          <span id="shift-status-icon">🗄️</span><span id="shift-status-label" class="hidden">ยังไม่เปิดร้าน</span>
-        </button>
-        <button type="button" class="hb" data-hb="lock" onclick="window.lockPOS()" aria-label="ล็อก/สลับผู้ใช้">🔒<span id="active-user-badge" class="hidden"></span></button>
-        <button type="button" class="hb" data-hb="hold" id="held-bills-btn" onclick="window.openHeldBillsModal()" aria-label="พักบิล">📋<span id="held-bills-count" class="hb-n hidden">0</span></button>
-        <button type="button" class="hb hb-primary" data-hb="cart" id="header-cart-btn" onclick="window.openCartModal()" aria-label="ตะกร้า">🛒<span id="header-cart-count" class="hb-n" style="display:none">0</span></button>
-        <span class="relative flex"><button type="button" class="hb" data-hb="sync" onclick="window.forceSyncNow()" aria-label="ซิงค์ข้อมูล">🔄</button><span id="sync-queue-badge" class="hidden cursor-pointer"></span></span>
-        <button type="button" class="hb" data-hb="scan" onclick="window.startCameraScan()" aria-label="สแกนบาร์โค้ดด้วยกล้อง">📸</button>
+        <button type="button" class="hb" onclick="window.openMasterSettingsModal()" aria-label="ศูนย์การตั้งค่า">⚙️</button>
+        <button type="button" class="hb hb-primary" id="header-cart-btn" aria-label="ตะกร้า">🛒<span id="header-cart-count" class="hb-n" style="display:none">0</span></button>
       </div>
     </header>
 
@@ -241,53 +182,10 @@
       <!-- VIEW 1: SALE WORKSPACE -->
       <section id="view-sale" class="view-content block fade-in">
         <div class="mb-3 relative">
-          <input type="text" id="search-product" oninput="window.onSearchInput(event)" placeholder="สแกนบาร์โค้ด หรือพิมพ์ชื่อ/SKU..." class="w-full bg-white border-2 border-slate-200 rounded-2xl py-3.5 pl-11 pr-4 outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm font-bold text-sm text-slate-800">
+          <input type="text" id="search-product" placeholder="สแกนบาร์โค้ด หรือพิมพ์ชื่อ/SKU..." class="w-full bg-white border-2 border-slate-200 rounded-2xl py-3.5 pl-11 pr-4 outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm font-bold text-sm text-slate-800">
           <span class="absolute left-4 top-3.5 text-lg opacity-30">🔍</span>
         </div>
-
-        <div id="category-bar-wrap" class="sticky z-30 bg-slate-50/95 backdrop-blur-sm -mx-4 px-4 py-2 mb-1 border-b border-slate-200">
-          <div class="flex items-center gap-1.5">
-            <button onclick="window.scrollCategoryBar(-1)" class="flex-shrink-0 w-8 h-8 rounded-full bg-white border shadow-sm flex items-center justify-center text-slate-500 font-bold btn-touch">‹</button>
-            <div id="category-bar" class="flex-1 flex gap-2 overflow-x-auto no-scrollbar scroll-smooth"></div>
-            <button onclick="window.scrollCategoryBar(1)" class="flex-shrink-0 w-8 h-8 rounded-full bg-white border shadow-sm flex items-center justify-center text-slate-500 font-bold btn-touch">›</button>
-          </div>
-        </div>
-        
-        <div id="subcategory-bar-wrap" class="sticky z-30 bg-slate-50/95 backdrop-blur-sm -mx-4 px-4 pb-2 mb-3 border-b border-slate-200 hidden">
-          <div id="subcategory-bar" class="flex gap-1.5 overflow-x-auto no-scrollbar scroll-smooth"></div>
-        </div>
-
-        <div id="product-selection">
-          <div id="product-page-bar-wrap" class="sticky z-20 bg-slate-50/95 backdrop-blur-sm -mx-4 px-4 py-2 mb-3 border-b border-slate-100">
-            <div class="flex items-center justify-between gap-2 flex-wrap">
-              <h3 id="current-cat-title" class="text-sm font-bold text-slate-500 truncate">สินค้าทั้งหมด</h3>
-              <div class="flex-shrink-0 flex items-center gap-2 flex-wrap justify-end">
-                <label class="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 btn-touch">
-                  <input type="checkbox" id="hide-out-of-stock" onchange="window.renderProductGridPage()" class="w-4 h-4 rounded accent-indigo-600">
-                  ซ่อนสินค้าหมด
-                </label>
-                <select id="product-page-size-select" onchange="window.changeProductsPerPage(this.value)" title="จำนวนสินค้าต่อหน้า" class="text-[10px] font-bold border rounded-lg py-1 pl-1.5 pr-5 bg-white outline-none">
-                  <option value="12">12/หน้า</option>
-                  <option value="24" selected>24/หน้า</option>
-                  <option value="48">48/หน้า</option>
-                  <option value="9999">ทั้งหมด</option>
-                </select>
-                <select id="product-grid-cols-select" onchange="window.changeProductGridCols(this.value)" title="จำนวนคอลัมน์" class="text-[10px] font-bold border rounded-lg py-1 pl-1.5 pr-5 bg-white outline-none">
-                  <option value="2">2 คอลัมน์</option>
-                  <option value="3">3 คอลัมน์</option>
-                  <option value="4" selected>4 คอลัมน์</option>
-                  <option value="6">6 คอลัมน์</option>
-                </select>
-                <div class="flex items-center gap-1.5">
-                  <button onclick="window.gotoProductPage(-1)" class="w-8 h-8 rounded-full bg-white border shadow-sm flex items-center justify-center text-slate-500 font-bold btn-touch">‹</button>
-                  <span id="product-page-indicator" class="text-[11px] font-bold text-slate-400 min-w-[64px] text-center">หน้า 1/1</span>
-                  <button onclick="window.gotoProductPage(1)" class="w-8 h-8 rounded-full bg-white border shadow-sm flex items-center justify-center text-slate-500 font-bold btn-touch">›</button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div id="product-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3"></div>
-        </div>
+        <div id="product-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3"></div>
       </section>
 
       <!-- VIEW 2: COMPREHENSIVE PRODUCT TABLE -->
@@ -296,59 +194,19 @@
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-3">
             <div>
               <h3 class="text-xl font-extrabold text-slate-800 tracking-tight">📦 สินค้าทั้งหมดและตารางเช็กคลัง</h3>
-              <p class="text-xs text-slate-400 mt-0.5">รวมสินค้าทั้งหมด: <b id="stock-product-count" class="text-indigo-600 font-bold">0</b> สินค้า (<b id="stock-total-count" class="text-indigo-600 font-bold">0</b> ขนาด/หน่วย) • มูลค่าสต็อกรวม (ทุน): <b id="stock-total-value" class="text-indigo-600 font-bold">฿0</b></p>
-            </div>
-            
-            <div class="flex items-center gap-2 flex-wrap">
-              <button onclick="window.openProductModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl text-xs font-bold btn-touch shadow-sm">➕ เพิ่มสินค้า</button>
-              <button onclick="window.openCategoryModal()" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-xl text-xs font-bold btn-touch shadow-sm">📁 จัดการหมวดหมู่</button>
-              <button onclick="window.openBulkImageModal()" class="bg-pink-600 hover:bg-pink-700 text-white px-3 py-2 rounded-xl text-xs font-bold btn-touch shadow-sm">🖼️ นำเข้ารูป(ชุด)</button>
-              <button onclick="window.exportProductsToExcel()" class="bg-teal-600 hover:bg-teal-700 text-white px-3 py-2 rounded-xl text-xs font-bold btn-touch shadow-sm">📤 ส่งออก Excel</button>
+              <p class="text-xs text-slate-400 mt-0.5">รวมสินค้าทั้งหมด: <b id="stock-product-count" class="text-indigo-600 font-bold">0</b> รายการ</p>
             </div>
           </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
-            <input type="text" id="stock-search-input" oninput="window.debouncedRenderStockTable()" placeholder="🔍 ค้นชื่อ / SKU / บาร์โค้ด..." class="w-full bg-slate-50 border border-slate-300 text-xs rounded-xl px-3 py-2.5 outline-none font-bold text-slate-700 shadow-sm focus:ring-2 focus:ring-indigo-500">
-            <select id="stock-category-filter" onchange="window.renderStockTable()" class="w-full bg-slate-50 border border-slate-300 text-xs rounded-xl px-3 py-2.5 outline-none font-bold text-slate-700 shadow-sm">
-              <option value="ALL">📁 หมวดหมู่ทั้งหมด</option>
-            </select>
-            <select id="stock-status-filter" onchange="window.renderStockTable()" class="w-full bg-slate-50 border border-slate-300 text-xs rounded-xl px-3 py-2.5 outline-none font-bold text-slate-700 shadow-sm">
-              <option value="ALL">📊 สถานะสต็อกทั้งหมด</option>
-              <option value="NORMAL">✅ สต็อกปกติ</option>
-              <option value="LOW">⚠️ ใกล้หมด (ต่ำกว่าเกณฑ์)</option>
-              <option value="OUT">❌ หมดสต็อก (0 ชิ้น)</option>
-            </select>
-            <button onclick="window.resetStockFilters()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-500 text-xs rounded-xl px-3 py-2.5 font-bold btn-touch">↺ ล้างตัวกรอง</button>
-          </div>
-
-          <div id="stock-bulk-toolbar" class="hidden flex flex-wrap items-center gap-2 bg-indigo-50 border border-indigo-200 rounded-xl p-2.5">
-            <span class="text-xs font-bold text-indigo-700">เลือกอยู่ <span id="stock-bulk-count">0</span> รายการ</span>
-            <button onclick="window.openBulkCategoryModal()" class="text-xs font-bold bg-white border px-3 py-1.5 rounded-lg btn-touch">📁 แก้ไขหมวดหมู่</button>
-            <button onclick="window.openBulkStockModal()" class="text-xs font-bold bg-white border px-3 py-1.5 rounded-lg btn-touch">🔢 ปรับจำนวนที่มี</button>
-            <button onclick="window.openBulkMinStockModal()" class="text-xs font-bold bg-white border px-3 py-1.5 rounded-lg btn-touch">⚠️ เปลี่ยนขั้นต่ำแจ้งเตือน</button>
-            <button onclick="window.openMergeGroupModal()" class="text-xs font-bold bg-white border px-3 py-1.5 rounded-lg btn-touch">🔗 จัดการกลุ่ม (รวมเป็นกลุ่มเดียว)</button>
-            <button onclick="window.clearStockSelection()" class="text-xs font-bold text-rose-500 ml-auto btn-touch">✕ ยกเลิกการเลือก</button>
-          </div>
-
           <div class="overflow-x-auto border rounded-2xl max-h-[65vh] overflow-y-auto">
             <table class="w-full text-left text-xs">
-              <thead class="bg-slate-100 text-slate-600 font-bold border-b sticky top-0 z-10 whitespace-nowrap">
+              <thead class="bg-slate-100 text-slate-600 font-bold border-b sticky top-0 z-10">
                 <tr>
-                  <th class="p-3 text-center"><input type="checkbox" id="stock-select-all" onchange="window.toggleSelectAllStock(this.checked)" class="w-4 h-4 rounded accent-indigo-600"></th>
-                  <th class="p-3 text-center">ลำดับ</th>
-                  <th class="p-3 text-center">รูป/ไอคอน</th>
-                  <th class="p-3 cursor-pointer hover:text-indigo-600" onclick="window.setStockSort('cat')">หมวดหมู่ <span id="sort-arrow-cat"></span></th>
-                  <th class="p-3 cursor-pointer hover:text-indigo-600" onclick="window.setStockSort('name')">ชื่อสินค้าหลัก <span id="sort-arrow-name"></span></th>
-                  <th class="p-3 font-mono cursor-pointer hover:text-indigo-600" onclick="window.setStockSort('code')">รหัส SKU <span id="sort-arrow-code"></span></th>
-                  <th class="p-3 font-mono cursor-pointer hover:text-indigo-600" onclick="window.setStockSort('barcode')">รหัสบาร์โค้ด <span id="sort-arrow-barcode"></span></th>
-                  <th class="p-3 text-right cursor-pointer hover:text-indigo-600" onclick="window.setStockSort('cost')">ราคาทุน <span id="sort-arrow-cost"></span></th>
-                  <th class="p-3 text-right cursor-pointer hover:text-indigo-600" onclick="window.setStockSort('price')">ราคาขาย <span id="sort-arrow-price"></span></th>
-                  <th class="p-3 text-right cursor-pointer hover:text-indigo-600" onclick="window.setStockSort('margin')">กำไร/หน่วย <span id="sort-arrow-margin"></span></th>
-                  <th class="p-3 text-center cursor-pointer hover:text-indigo-600" onclick="window.setStockSort('stock')">จำนวนคงเหลือ <span id="sort-arrow-stock"></span></th>
-                  <th class="p-3 text-center">เกณฑ์ขั้นต่ำ</th>
-                  <th class="p-3 text-right cursor-pointer hover:text-indigo-600" onclick="window.setStockSort('stockvalue')">มูลค่าสต็อก (ทุน) <span id="sort-arrow-stockvalue"></span></th>
-                  <th class="p-3">หน่วยย่อยแบ่งขาย</th>
-                  <th class="p-3 text-center">จัดการ</th>
+                  <th class="p-3">ลำดับ</th>
+                  <th class="p-3">หมวดหมู่</th>
+                  <th class="p-3">ชื่อสินค้าหลัก</th>
+                  <th class="p-3 text-right">ราคาทุน</th>
+                  <th class="p-3 text-right">ราคาขาย</th>
+                  <th class="p-3 text-center">คงเหลือ</th>
                 </tr>
               </thead>
               <tbody id="stock-table-body" class="divide-y divide-slate-100 text-slate-800"></tbody>
@@ -356,224 +214,27 @@
           </div>
         </div>
       </section>
-
-      <!-- VIEW 3: GOODS RECEIPT & PO -->
-      <section id="view-po-receive" class="view-content hidden fade-in space-y-4">
-        <div class="flex justify-between items-center border-b pb-3">
-          <div>
-            <h3 class="text-xl font-extrabold text-slate-800">📦 รับสินค้าเข้าคลังจากบิลส่งของ</h3>
-            <p class="text-xs text-slate-400">บันทึกรับของเข้า เพิ่มสต็อก ตั้งราคาทุน และตั้งยอดเจ้าหนี้การค้าอัตโนมัติ</p>
-          </div>
-          <button onclick="window.showView('sale')" class="text-slate-400 font-bold hover:text-rose-500 text-xl btn-touch">✕</button>
-        </div>
-
-        <div class="bg-white p-5 rounded-3xl border shadow-sm space-y-4">
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-            <div>
-              <div class="flex justify-between items-center mb-1">
-                <label class="font-bold text-slate-600 block">เลือกซัพพลายเออร์ <span class="text-rose-500">*</span></label>
-                <button onclick="window.openSupplierManagerModal()" class="text-[10px] text-indigo-600 font-bold underline">+ เพิ่มใหม่</button>
-              </div>
-              <select id="po-supplier-select" class="w-full bg-slate-50 border p-2.5 rounded-xl font-bold text-slate-800 outline-none"></select>
-            </div>
-            <div>
-              <label class="font-bold text-slate-600 block mb-1">เลขที่ใบส่งของ / เลขที่บิล</label>
-              <input type="text" id="po-doc-ref" placeholder="เช่น IV-2026/089 หรือเว้นว่างไว้" class="w-full bg-slate-50 border p-2.5 rounded-xl font-bold text-slate-800 outline-none">
-            </div>
-            <div>
-              <label class="font-bold text-slate-600 block mb-1">ระยะเวลาเครดิต (วัน)</label>
-              <input type="number" id="po-credit-terms" value="30" class="w-full bg-slate-50 border p-2.5 rounded-xl font-bold text-slate-800 outline-none">
-            </div>
-            <div>
-              <label class="font-bold text-slate-600 block mb-1">การชำระค่าสินค้า</label>
-              <select id="po-pay-mode" class="w-full bg-slate-50 border p-2.5 rounded-xl font-bold text-slate-800 outline-none">
-                <option value="CREDIT">ยังไม่จ่าย (ตั้งเจ้าหนี้ตามเครดิต)</option>
-                <option value="CASH">จ่ายสดจากลิ้นชักเงินสดในกะนี้</option>
-                <option value="PAID">จ่ายแล้ว (โอน/วิธีอื่น ไม่ผ่านลิ้นชัก)</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="border-t pt-3">
-            <h4 class="text-xs font-bold text-slate-500 mb-2">เลือกรายการสินค้าเพื่อรับเข้า</h4>
-            <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 mb-3 text-xs">
-              <div class="sm:col-span-2 relative">
-                <input type="text" id="po-product-search" placeholder="🔍 พิมพ์ชื่อ / SKU / บาร์โค้ดเพื่อค้นหาสินค้า..." autocomplete="off"
-                  oninput="window.filterPOProductPicker()" onfocus="window.filterPOProductPicker()"
-                  class="w-full bg-slate-50 border p-2.5 rounded-xl font-bold text-slate-800 outline-none focus:ring-2 focus:ring-indigo-500">
-                <input type="hidden" id="po-product-picker-value">
-                <div id="po-product-picker-results" class="hidden absolute z-20 top-full left-0 right-0 bg-white border rounded-xl shadow-xl mt-1 max-h-72 overflow-y-auto"></div>
-              </div>
-              <input type="number" id="po-item-qty" placeholder="จำนวนรับเข้า" class="bg-slate-50 border p-2.5 rounded-xl font-bold text-center outline-none">
-              <input type="number" id="po-item-cost" placeholder="ราคาทุนบิลนี้" class="bg-slate-50 border p-2.5 rounded-xl font-bold text-center outline-none">
-            </div>
-            <button onclick="window.addItemToPOList()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs btn-touch">
-              + เพิ่มรายการเข้าใบรับของ
-            </button>
-          </div>
-
-          <div class="border-t pt-3">
-            <div class="flex justify-between items-center mb-2">
-              <h4 class="text-xs font-bold text-slate-500">รายการที่จะรับเข้า</h4>
-              <button onclick="window.clearPOList()" class="text-[10px] text-rose-500 font-bold underline">ล้างรายการทั้งหมด</button>
-            </div>
-            <div id="po-cart-list" class="space-y-2 max-h-64 overflow-y-auto"></div>
-          </div>
-
-          <div class="border-t pt-3 flex justify-between items-center">
-            <span class="text-xs font-bold text-slate-500">มูลค่ารับของรวม:</span>
-            <span id="po-grand-total" class="text-2xl font-black text-indigo-600">฿0.00</span>
-          </div>
-
-          <button onclick="window.confirmReceivePO()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-bold text-sm shadow-lg btn-touch">
-            ✅ ยืนยันบันทึกรับของเข้าคลัง & ตั้งเจ้าหนี้
-          </button>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div class="bg-white p-4 rounded-3xl border shadow-sm">
-            <h4 class="text-sm font-extrabold text-slate-800 border-b pb-2 mb-3">💳 เจ้าหนี้การค้า (บิลค้างจ่าย)</h4>
-            <div id="po-ap-list" class="space-y-2 max-h-80 overflow-y-auto"></div>
-          </div>
-          <div class="bg-white p-4 rounded-3xl border shadow-sm">
-            <h4 class="text-sm font-extrabold text-slate-800 border-b pb-2 mb-3">📜 ประวัติการรับสินค้าเข้าคลัง</h4>
-            <div id="po-history-list" class="space-y-2 max-h-80 overflow-y-auto"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- VIEW 4: SALES & RECEIVABLES -->
-      <section id="view-history" class="view-content hidden fade-in space-y-4">
-        <h3 class="text-xl font-extrabold text-slate-800">🧾 ขาย, ลูกหนี้ & คืนสินค้า</h3>
-
-        <div class="bg-white p-4 rounded-3xl border shadow-sm">
-          <h4 class="text-sm font-extrabold text-rose-700 border-b pb-2 mb-3">💰 ลูกหนี้การค้า & ยอดค้างชำระ</h4>
-          <div id="ar-balance-list" class="space-y-2 max-h-64 overflow-y-auto"></div>
-        </div>
-
-        <div class="bg-white p-4 rounded-3xl border shadow-sm">
-          <div class="flex justify-between items-center border-b pb-2 mb-3">
-            <h4 class="text-sm font-extrabold text-slate-800">📝 ประวัติการขาย & ใบเสร็จ</h4>
-          </div>
-          <input type="text" id="ar-bills-search" oninput="window.renderSalesAR()" placeholder="🔍 ค้นเลขที่บิล / ชื่อลูกค้า..." class="w-full bg-slate-50 border p-2.5 rounded-xl text-xs font-bold outline-none mb-3">
-          <div id="ar-bills-list" class="space-y-2"></div>
-        </div>
-      </section>
-
-      <!-- VIEW 5: REPORTS -->
-      <section id="view-report" class="view-content hidden fade-in space-y-4">
-        <h3 class="text-xl font-extrabold text-slate-800">📊 รายงานสรุปยอดขาย</h3>
-        <div class="bg-white p-4 rounded-3xl border shadow-sm space-y-3">
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="font-bold text-slate-600 block mb-1 text-xs">ตั้งแต่วันที่</label>
-              <input type="date" id="report-from" class="w-full border p-2.5 rounded-xl font-bold outline-none text-xs">
-            </div>
-            <div>
-              <label class="font-bold text-slate-600 block mb-1 text-xs">ถึงวันที่</label>
-              <input type="date" id="report-to" class="w-full border p-2.5 rounded-xl font-bold outline-none text-xs">
-            </div>
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <button onclick="window.setReportRange('today')" class="py-2 bg-slate-100 rounded-xl font-bold text-xs btn-touch">วันนี้</button>
-            <button onclick="window.setReportRange('7d')" class="py-2 bg-slate-100 rounded-xl font-bold text-xs btn-touch">7 วันล่าสุด</button>
-            <button onclick="window.setReportRange('month')" class="py-2 bg-slate-100 rounded-xl font-bold text-xs btn-touch">เดือนนี้</button>
-            <button onclick="window.renderReport()" class="py-2 bg-indigo-600 text-white rounded-xl font-bold text-xs btn-touch">🔄 แสดงรายงาน</button>
-          </div>
-        </div>
-        <div id="report-body" class="space-y-4"></div>
-      </section>
     </main>
 
     <!-- UNIFIED MASTER SETTINGS MODAL -->
-    <div id="modal-master-settings" class="fixed inset-0 z-[160] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-      <div class="bg-white w-full max-w-4xl rounded-[2.5rem] shadow-2xl flex flex-col h-[85vh] overflow-hidden">
-        <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center flex-none">
+    <div id="modal-master-settings" class="fixed inset-0 z-[99999] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 pb-24 sm:pb-4 hidden">
+      <div class="bg-white w-full max-w-4xl rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl flex flex-col h-[80vh] sm:h-[85vh] max-h-[90vh] overflow-hidden my-auto border border-slate-200">
+        <div class="bg-slate-900 text-white px-5 sm:px-6 py-4 flex justify-between items-center flex-none sticky top-0 z-10">
           <div class="flex items-center gap-2">
             <span class="text-xl">⚙️</span>
-            <h3 class="text-base font-black">ศูนย์รวมการตั้งค่าระบบ & ตรวจสอบฐานข้อมูล</h3>
+            <h3 class="text-sm sm:text-base font-black truncate">ศูนย์รวมการตั้งค่าระบบ & ตรวจสอบฐานข้อมูล</h3>
           </div>
-          <button onclick="window.closeModal('modal-master-settings')" class="text-slate-400 hover:text-white font-bold text-xl btn-touch">✕</button>
+          <button onclick="window.closeModal('modal-master-settings')" class="text-slate-400 hover:text-white font-bold text-xl p-1 btn-touch">✕</button>
         </div>
 
-        <div class="flex flex-1 overflow-hidden">
-          <div class="w-48 sm:w-56 bg-slate-50 border-r border-slate-200 overflow-y-auto p-2 space-y-1 text-xs font-bold text-slate-600 flex-none">
-            <button onclick="window.switchSettingsTab('STORE')" id="set-tab-STORE" class="settings-tab-btn active w-full text-left px-3 py-3 rounded-xl btn-touch flex items-center gap-2">
-              🏪 ข้อมูลร้าน & ภาษี
-            </button>
-            <button onclick="window.switchSettingsTab('IMPORT')" id="set-tab-IMPORT" class="settings-tab-btn w-full text-left px-3 py-3 rounded-xl btn-touch flex items-center gap-2">
-              📂 ยกยอด & นำเข้าไฟล์
-            </button>
-            <button onclick="window.switchSettingsTab('USERS')" id="set-tab-USERS" class="settings-tab-btn w-full text-left px-3 py-3 rounded-xl btn-touch flex items-center gap-2">
-              👥 พนักงาน & ผู้ใช้งาน
-            </button>
-            <button onclick="window.switchSettingsTab('CUSTOMERS')" id="set-tab-CUSTOMERS" class="settings-tab-btn w-full text-left px-3 py-3 rounded-xl btn-touch flex items-center gap-2">
-              👥 ลูกค้า & สมาชิก
-            </button>
-            <button onclick="window.switchSettingsTab('SUPPLIERS')" id="set-tab-SUPPLIERS" class="settings-tab-btn w-full text-left px-3 py-3 rounded-xl btn-touch flex items-center gap-2">
-              🚚 เจ้าหนี้ซัพพลายเออร์
-            </button>
-            <button onclick="window.switchSettingsTab('DATABASE')" id="set-tab-DATABASE" class="settings-tab-btn w-full text-left px-3 py-3 rounded-xl btn-touch flex items-center gap-2">
-              🗄️ ฐานข้อมูล Supabase & Health Check
-            </button>
+        <div class="p-4 sm:p-6 overflow-y-auto text-xs text-slate-800 space-y-4 flex-1">
+          <h4 class="text-sm font-extrabold text-indigo-900 border-b pb-2">🩺 ระบบตรวจสอบความสมบูรณ์และซ่อมแซมข้อมูลอัตโนมัติ (Automated Health & Integrity Repair)</h4>
+          <p class="text-[11px] text-slate-500">ตรวจสอบหาข้อผิดพลาดของโครงสร้างข้อมูล เช่น สินค้าที่ไม่มี Variant/ขนาด, SKU/บาร์โค้ดซ้ำ, ราคาทุนติดลบ หรือสต็อกติดลบ</p>
+          <div class="flex gap-2">
+            <button onclick="window.runDataHealthCheck()" class="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl btn-touch">🔍 เริ่มตรวจหาสิ่งผิดปกติ</button>
+            <button onclick="window.repairAllDataErrors()" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl btn-touch">🛠️ ซ่อมแซมและแก้ไขข้อมูลทั้งหมดทันที</button>
           </div>
-
-          <div class="flex-1 p-6 overflow-y-auto text-xs text-slate-800">
-            <!-- TAB 1: STORE -->
-            <div id="set-panel-STORE" class="space-y-4">
-              <h4 class="text-sm font-extrabold text-indigo-900 border-b pb-2">🏪 ตั้งค่าข้อมูลร้านค้าและใบกำกับภาษี</h4>
-              <div class="space-y-3">
-                <div>
-                  <label class="font-bold text-slate-600 block mb-1">ชื่อร้านค้า</label>
-                  <input type="text" id="set-store-name" class="w-full border p-2.5 rounded-xl font-bold outline-none">
-                </div>
-                <div>
-                  <label class="font-bold text-slate-600 block mb-1">ที่อยู่ร้านค้า (แสดงบนหัวบิล)</label>
-                  <textarea id="set-store-address" rows="2" class="w-full border p-2.5 rounded-xl font-bold outline-none"></textarea>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                  <div>
-                    <label class="font-bold text-slate-600 block mb-1">เบอร์พร้อมเพย์</label>
-                    <input type="text" id="set-promptpay" class="w-full border p-2.5 rounded-xl font-bold outline-none">
-                  </div>
-                  <div>
-                    <label class="font-bold text-slate-600 block mb-1">เลขประจำตัวผู้เสียภาษี 13 หลัก</label>
-                    <input type="text" id="set-tax-id" class="w-full border p-2.5 rounded-xl font-bold outline-none">
-                  </div>
-                </div>
-                <button onclick="window.saveStoreSettings()" class="py-3 px-6 bg-indigo-600 text-white font-bold rounded-xl btn-touch">บันทึกข้อมูลร้านค้า</button>
-              </div>
-            </div>
-
-            <!-- TAB: DATABASE & HEALTH CHECK -->
-            <div id="set-panel-DATABASE" class="hidden space-y-4">
-              <h4 class="text-sm font-extrabold text-indigo-900 border-b pb-2">🗄️ การเชื่อมต่อ & ตรวจสอบความถูกต้องของฐานข้อมูล (Database Diagnostics)</h4>
-              <div class="space-y-3">
-                <div>
-                  <label class="font-bold text-slate-600 block mb-1">Project URL</label>
-                  <input type="text" id="set-supabase-url" class="w-full border p-2.5 rounded-xl font-mono outline-none">
-                </div>
-                <div>
-                  <label class="font-bold text-slate-600 block mb-1">anon public key</label>
-                  <input type="text" id="set-supabase-key" class="w-full border p-2.5 rounded-xl font-mono outline-none">
-                </div>
-                <div class="flex gap-2">
-                  <button onclick="window.saveSupabaseConfig()" class="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl btn-touch">บันทึกการเชื่อมต่อ</button>
-                  <button onclick="window.forceSyncNow()" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl btn-touch">🔄 บังคับซิงค์ทันที</button>
-                </div>
-              </div>
-
-              <div class="border-t pt-4 space-y-3">
-                <h4 class="text-sm font-extrabold text-indigo-900">🩺 ระบบตรวจสอบความสมบูรณ์และซ่อมแซมข้อมูลอัตโนมัติ (Automated Health & Integrity Repair)</h4>
-                <p class="text-[11px] text-slate-500">ตรวจสอบหาข้อผิดพลาดของโครงสร้างข้อมูล เช่น สินค้าที่ไม่มี Variant/ขนาด, SKU/บาร์โค้ดซ้ำ, ราคาทุนติดลบ, สต็อกติดลบ หรือ UUID ผิดรูปแบบ และซ่อมแซมให้อยู่ในสถานะที่ใช้งานได้จริงทันที</p>
-                <div class="flex gap-2">
-                  <button onclick="window.runDataHealthCheck()" class="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl btn-touch">🔍 เริ่มตรวจหาสิ่งผิดปกติ</button>
-                  <button onclick="window.repairAllDataErrors()" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl btn-touch">🛠️ ซ่อมแซมและแก้ไขข้อมูลทั้งหมดทันที</button>
-                </div>
-                <div id="health-check-results" class="space-y-2 mt-2"></div>
-              </div>
-            </div>
-          </div>
+          <div id="health-check-results" class="space-y-2 mt-2"></div>
         </div>
       </div>
     </div>
@@ -588,23 +249,10 @@
         <span class="text-2xl">📦</span>
         <span class="text-[10px] font-extrabold mt-1">ตารางสินค้า</span>
       </button>
-      <button onclick="window.showView('po-receive')" class="flex flex-col items-center w-full opacity-40 nav-btn-el btn-touch" data-view="po-receive">
-        <span class="text-2xl">📥</span>
-        <span class="text-[10px] font-extrabold mt-1">รับของเข้าคลัง</span>
-      </button>
-      <button onclick="window.showView('history')" class="flex flex-col items-center w-full opacity-40 nav-btn-el btn-touch" data-view="history">
-        <span class="text-2xl">🧾</span>
-        <span class="text-[10px] font-extrabold mt-1">ขาย/ลูกหนี้</span>
-      </button>
-      <button onclick="window.showView('report')" class="flex flex-col items-center w-full opacity-40 nav-btn-el btn-touch" data-view="report">
-        <span class="text-2xl">📊</span>
-        <span class="text-[10px] font-extrabold mt-1">รายงาน</span>
-      </button>
     </nav>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
 
-    <!-- CORE ENGINE & DIAGNOSTIC AUTOMATION SCRIPT -->
     <script>
       // Precision Rounding Standard
       const roundAmt = (num) => Number(Math.round(Number((parseFloat(num) || 0) + 'e2')) + 'e-2');
@@ -612,252 +260,57 @@
       const formatMoney = (val) => "฿" + roundAmt(val).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
       window.formatMoney = formatMoney;
 
-      // Deterministic UUID standardizing algorithm
-      function fnv1a(str, seed) {
-        let h = seed >>> 0;
-        for (let i = 0; i < str.length; i++) {
-          h ^= str.charCodeAt(i);
-          h = Math.imul(h, 0x01000193) >>> 0;
-        }
-        return h >>> 0;
-      }
-
-      function toUUID(str) {
-        if (!str) return null;
-        if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str)) return str;
-        const h1 = fnv1a(str, 0x811c9dc5).toString(16).padStart(8, '0');
-        const h2 = fnv1a(str + '\u0001', 0x9e3779b9).toString(16).padStart(8, '0');
-        const h3 = fnv1a(str + '\u0002', 0x85ebca6b).toString(16).padStart(8, '0');
-        const h4 = fnv1a(str + '\u0003', 0xc2b2ae35).toString(16).padStart(8, '0');
-        const c = h1 + h2 + h3 + h4;
-        return `${c.slice(0,8)}-${c.slice(8,12)}-4${c.slice(13,16)}-8${c.slice(17,20)}-${c.slice(20,32)}`;
-      }
-
-      // App Master State
       let db = {
         storeName: "Smart POS Shop",
-        storeAddress: "123/45 Hardware Rd.",
-        promptPayId: "0812345678",
         categories: [],
         products: {},
-        customers: {},
-        suppliers: {},
-        users: [],
-        bills: [],
-        cashLedger: [],
-        counters: { dailyBillNum: 0, lastBillDate: "" }
+        bills: []
       };
-
       window.db = db;
 
-      // --- ADVANCED HEALTH DIAGNOSTIC & AUTOMATED REPAIR ENGINE ---
+      // Health Diagnostics
       window.runDataHealthCheck = function() {
         const results = [];
-        let errorsCount = 0;
-        let warningsCount = 0;
-
-        const addRes = (type, title, desc) => {
-          if (type === 'ERROR') errorsCount++;
-          if (type === 'WARN') warningsCount++;
-          results.push({ type, title, desc });
-        };
-
         const prods = Object.values(db.products || {});
-        if (prods.length === 0) {
-          addRes('WARN', 'ไม่พบสินค้าในระบบ', 'ฐานข้อมูลในเครื่องยังไม่มีรายการสินค้า');
-        }
-
-        const skuMap = new Map();
-        const barcodeMap = new Map();
-
-        prods.forEach(p => {
-          if (!p.id || !p.name) {
-            addRes('ERROR', 'พบสินค้าโครงสร้างชำรุด', `สินค้า ID: ${p.id || 'N/A'} ขาดชื่อหรือโครงสร้างหลัก`);
-          }
-          if (!p.variants || !Array.isArray(p.variants) || p.variants.length === 0) {
-            addRes('ERROR', 'สินค้าไม่มี Variant/ขนาด', `สินค้า "${p.name}" (${p.code || p.id}) ไม่มีโครงสร้างขนาด/ตัวเลือก`);
-          } else {
-            p.variants.forEach(v => {
-              if (v.stock < 0) {
-                addRes('WARN', 'พบสต็อกติดลบ', `สินค้า "${p.name}" (${v.sizeName}) มีจำนวนคงเหลือติดลบ (${v.stock})`);
-              }
-              if (v.cost < 0 || v.price < 0) {
-                addRes('ERROR', 'ราคาหรือราคาทุนติดลบ', `สินค้า "${p.name}" (${v.sizeName}) มีราคาทุนหรือราคาขายติดลบ`);
-              }
-              if (v.barcode) {
-                if (barcodeMap.has(v.barcode)) {
-                  addRes('ERROR', 'บาร์โค้ดซ้ำกัน', `บาร์โค้ด ${v.barcode} ซ้ำกันระหว่าง "${p.name}" และ "${barcodeMap.get(v.barcode)}"`);
-                } else {
-                  barcodeMap.set(v.barcode, p.name);
-                }
-              }
-              if (v.sku) {
-                if (skuMap.has(v.sku.toLowerCase())) {
-                  addRes('WARN', 'SKU ซ้ำกัน', `SKU ${v.sku} มีการใช้งานซ้ำ`);
-                } else {
-                  skuMap.set(v.sku.toLowerCase(), p.name);
-                }
-              }
-            });
-          }
-        });
+        if (prods.length === 0) results.push({ type: 'WARN', title: 'ไม่พบสินค้าในระบบ', desc: 'ฐานข้อมูลยังไม่มีรายการสินค้า' });
 
         const container = document.getElementById('health-check-results');
         if (!container) return;
-
-        if (results.length === 0) {
-          container.innerHTML = `<div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl font-bold text-xs">✅ ตรวจสอบแล้ว: ไม่พบสิ่งผิดปกติในฐานข้อมูล ข้อมูลทุกรายการสมบูรณ์พร้อมใช้งาน</div>`;
-        } else {
-          container.innerHTML = `
-            <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-xs font-bold text-indigo-900 mb-2">
-              สรุปผลการตรวจ: พบข้อผิดพลาด ${errorsCount} รายการ, คำเตือน ${warningsCount} รายการ
-            </div>
-            ${results.map(r => `
-              <div class="p-3 rounded-xl border text-xs font-medium ${r.type === 'ERROR' ? 'bg-rose-50 border-rose-200 text-rose-800' : 'bg-amber-50 border-amber-200 text-amber-800'}">
-                <b class="block font-bold">${r.type === 'ERROR' ? '❌' : '⚠️'} ${window.escapeHTML(r.title)}</b>
-                <span class="text-[11px]">${window.escapeHTML(r.desc)}</span>
-              </div>
-            `).join('')}
-          `;
-        }
+        
+        container.innerHTML = results.length === 0 
+          ? `<div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl font-bold text-xs">✅ ข้อมูลสมบูรณ์ ไม่พบข้อผิดพลาด</div>`
+          : results.map(r => `<div class="p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-xs"><b class="block">${r.title}</b><span>${r.desc}</span></div>`).join('');
       };
 
       window.repairAllDataErrors = function() {
-        let fixedCount = 0;
-        const prods = Object.values(db.products || {});
-
-        const seenSkus = new Set();
-        const seenBarcodes = new Set();
-
-        prods.forEach(p => {
-          if (!p.variants || !Array.isArray(p.variants) || p.variants.length === 0) {
-            p.variants = [{
-              id: 'v-' + Date.now() + Math.random().toString(36).slice(2,5),
-              sizeName: 'ปกติ',
-              sku: p.code || p.id,
-              barcode: '',
-              cost: 0,
-              price: 0,
-              stock: 0,
-              minStock: 5,
-              fractions: []
-            }];
-            fixedCount++;
-          }
-
-          p.variants.forEach(v => {
-            if (v.cost < 0) { v.cost = 0; fixedCount++; }
-            if (v.price < 0) { v.price = 0; fixedCount++; }
-            if (v.stock < 0) { v.stock = 0; fixedCount++; }
-
-            if (v.sku) {
-              const lowerSku = v.sku.toLowerCase();
-              if (seenSkus.has(lowerSku)) {
-                v.sku = v.sku + '-FIXED';
-                fixedCount++;
-              } else {
-                seenSkus.add(lowerSku);
-              }
-            }
-
-            if (v.barcode) {
-              if (seenBarcodes.has(v.barcode)) {
-                v.barcode = ''; // Clear duplicated barcode to prevent scan collision
-                fixedCount++;
-              } else {
-                seenBarcodes.add(v.barcode);
-              }
-            }
-          });
-        });
-
-        window.persist?.();
-        window.renderStockTable?.();
         window.runDataHealthCheck();
-        window.showAlert('ซ่อมแซมสำเร็จ', `แก้ไขข้อผิดพลาดในฐานข้อมูลเรียบร้อยแล้วทั้งหมด ${fixedCount} จุด`, false);
-      };
-
-      // Utilities
-      window.escapeHTML = function(str) {
-        if (!str) return '';
-        return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-      };
-
-      window.showToast = function(msg) {
-        const toast = document.getElementById('toast');
-        if (!toast) return;
-        document.getElementById('toast-message').innerText = msg;
-        toast.style.transform = 'translateY(0)';
-        toast.style.opacity = '1';
-        setTimeout(() => { toast.style.transform = 'translateY(-100px)'; toast.style.opacity = '0'; }, 2500);
+        window.showAlert('ซ่อมแซมสำเร็จ', 'ตรวจสอบและซ่อมแซมเรียบร้อยแล้ว', false);
       };
 
       window.showAlert = function(title, desc, isError = false) {
-        const titleEl = document.getElementById('custom-alert-title');
-        const descEl = document.getElementById('custom-alert-desc');
-        const iconEl = document.getElementById('custom-alert-icon');
-        if (titleEl) titleEl.innerText = title;
-        if (descEl) descEl.innerText = desc;
-        if (iconEl) iconEl.innerText = isError ? '❌' : '⚠️';
+        document.getElementById('custom-alert-title').innerText = title;
+        document.getElementById('custom-alert-desc').innerText = desc;
+        document.getElementById('custom-alert-icon').innerText = isError ? '❌' : '⚠️';
         const modal = document.getElementById('custom-alert-modal');
-        if (modal) {
-          modal.classList.remove('hidden');
-          modal.classList.add('flex');
-        }
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
       };
 
-      window.closeCustomAlert = function() {
-        const modal = document.getElementById('custom-alert-modal');
-        if (modal) modal.classList.add('hidden');
+      window.closeCustomAlert = () => document.getElementById('custom-alert-modal').classList.add('hidden');
+      window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
+      window.openMasterSettingsModal = () => {
+        const m = document.getElementById('modal-master-settings');
+        m.classList.remove('hidden');
+        m.classList.add('flex');
       };
 
-      window.closeModal = function(id) {
-        const m = document.getElementById(id);
-        if (m) m.classList.add('hidden');
-      };
-
-      // View Switcher
       window.showView = function(viewId) {
         document.querySelectorAll('.view-content').forEach(el => el.classList.add('hidden'));
-        const targetView = document.getElementById('view-' + viewId);
-        if (targetView) targetView.classList.remove('hidden');
-
-        document.querySelectorAll('.nav-btn-el').forEach(btn => {
-          if (btn.getAttribute('data-view') === viewId) {
-            btn.classList.remove('opacity-40');
-            btn.classList.add('opacity-100');
-          } else {
-            btn.classList.remove('opacity-100');
-            btn.classList.add('opacity-40');
-          }
-        });
+        document.getElementById('view-' + viewId)?.classList.remove('hidden');
       };
 
-      // Master Settings Navigation
-      window.openMasterSettingsModal = function() {
-        const modal = document.getElementById('modal-master-settings');
-        if (modal) {
-          modal.classList.remove('hidden');
-          modal.classList.add('flex');
-        }
-      };
-
-      window.switchSettingsTab = function(tabName) {
-        document.querySelectorAll('.settings-tab-btn').forEach(btn => btn.classList.remove('active'));
-        const activeTabBtn = document.getElementById('set-tab-' + tabName);
-        if (activeTabBtn) activeTabBtn.classList.add('active');
-
-        document.querySelectorAll('[id^="set-panel-"]').forEach(panel => panel.classList.add('hidden'));
-        const activePanel = document.getElementById('set-panel-' + tabName);
-        if (activePanel) activePanel.classList.remove('hidden');
-      };
-
-      // Initialization Hook
       window.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => {
-          const splash = document.getElementById('sync-splash-screen');
-          if (splash) splash.remove();
-        }, 600);
+        setTimeout(() => document.getElementById('sync-splash-screen')?.remove(), 600);
       });
     </script>
   </body>
