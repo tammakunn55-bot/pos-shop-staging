@@ -37,6 +37,14 @@ async function computeVersion() {
     return SHELL_PREFIX + 'fallback';
   }
 }
+const OFFLINE_PAGE = `<!doctype html><html lang="th"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<body style="font-family:sans-serif;padding:24px;background:#f1f5f9;color:#0f172a">
+<h2>ยังไม่มีข้อมูลแอปในเครื่องนี้</h2>
+<p>เครื่องนี้ยังไม่เคยเปิดแอปแบบออนไลน์จนเสร็จ จึงเปิดโหมดออฟไลน์ไม่ได้</p>
+<p><b>วิธีแก้:</b> ต่อ Wi-Fi หรือปิดโหมดเครื่องบิน เปิดแอปครั้งหนึ่งให้โหลดเสร็จ แล้วจึงใช้โหมดออฟไลน์ได้</p>
+</body></html>`;
+
 const VERSION = computeVersion();
 
 // จำกัดจำนวนรูปใน cache (ลบรายการเก่าสุดก่อน)
@@ -51,6 +59,9 @@ self.addEventListener('install', e => e.waitUntil((async () => {
   const v = await VERSION;
   const c = await caches.open(v);
   // เก็บทีละไฟล์: ถ้าไฟล์ไหนโหลดไม่ได้ ไม่ทำให้การติดตั้งทั้งชุดล้ม
+  // หน้าแอปหลักต้องเก็บได้ ถ้าไม่ได้ให้ล้มการติดตั้ง (จะลองใหม่ในการเปิดครั้งถัดไป)
+  await c.add('./index.html');
+  // ไลบรารี: เก็บแบบพยายามที่สุด ถ้าไฟล์ไหนพลาดจะโหลดและเก็บตอนเปิดออนไลน์ครั้งถัดไป
   await Promise.all(SHELL.map(u => c.add(u).catch(err => console.warn('precache skip', u, err))));
   await self.skipWaiting();
 })()));
@@ -100,7 +111,9 @@ self.addEventListener('fetch', e => {
         c.put('./', res.clone());
         return res;
       } catch (err) {
-        return (await c.match('./')) || (await c.match('./index.html')) || Response.error();
+        const cached = (await c.match('./')) || (await c.match('./index.html'));
+        if (cached) return cached;
+        return new Response(OFFLINE_PAGE, { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
       }
     })());
     return;
